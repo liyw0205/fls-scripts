@@ -5,13 +5,35 @@
     "type": "repo",
     "link": "https://github.com/liyw0205/caiyun",
     "link_name": "caiyun_box",
-    "install": "",
+    "install": "cat caiyun_box/README.md",
     "task_cron": {
       "name": "中国移动云盘签到",
       "cron": "30 9,16,23 * * *",
-      "command": "task caiyun_box/caiyun.mjs"
+      "command": "task caiyun_box/run.mjs"
     },
-    "created_at": "2026-04-29 09:47:33",
-    "updated_at": "2026-04-29 21:16:40"
+    "created_at": "2026-05-09 00:00:00",
+    "updated_at": "2026-05-09 00:00:00"
+  },
+  {
+    "id": "kg",
+    "name": "酷狗音乐签到",
+    "type": "repo",
+    "link": "https://github.com/develop202/kgcheckin",
+    "link_name": "kgcheckin",
+    "install": "cd kgcheckin\nnpm install",
+    "task_cron": [
+      {
+        "name": "酷狗音乐签到",
+        "cron": "30 8 * * *",
+        "command": "cd kgcheckin || exit 1\nfls_kill -p 3000\nnpm run main\nfls_kill -p 3000"
+      },
+      {
+        "name": "酷狗音乐扫码",
+        "cron": "30 20 * * *",
+        "command": "cd kgcheckin || exit 1\nfls_kill -p 3000\nnpm run qrcodeLogin\nfls_kill -p 3000"
+      }
+    ],
+    "created_at": "2026-05-09 00:00:00",
+    "updated_at": "2026-05-09 00:00:00"
   }
 ]
