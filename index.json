@@ -6,7 +6,7 @@
     "link": "https://github.com/liyw0205/caiyun",
     "link_name": "caiyun_box",
     "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/caiyun@main/README.md",
-    "install": "cat caiyun_box/README.md",
+    "install": "",
     "task_cron": {
       "name": "中国移动云盘签到",
       "cron": "30 9,16,23 * * *",
