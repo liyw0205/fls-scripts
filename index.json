@@ -1,0 +1,17 @@
+[
+  {
+    "id": "caiyun",
+    "name": "中国移动云盘",
+    "type": "repo",
+    "link": "https://github.com/liyw0205/caiyun",
+    "link_name": "caiyun_box",
+    "install": "",
+    "task_cron": {
+      "name": "中国移动云盘签到",
+      "cron": "30 9,16,23 * * *",
+      "command": "task caiyun_box/caiyun.mjs"
+    },
+    "created_at": "2026-04-29 09:47:33",
+    "updated_at": "2026-04-29 21:16:40"
+  }
+]
