@@ -5,6 +5,7 @@
     "type": "repo",
     "link": "https://github.com/liyw0205/caiyun",
     "link_name": "caiyun_box",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/caiyun@main/README.md",
     "install": "cat caiyun_box/README.md",
     "task_cron": {
       "name": "中国移动云盘签到",
@@ -20,6 +21,7 @@
     "type": "repo",
     "link": "https://github.com/develop202/kgcheckin",
     "link_name": "kgcheckin",
+    "doc_link": "https://cdn.jsdelivr.net/gh/develop202/kgcheckin@main/README.md",
     "install": "cd kgcheckin\nnpm install",
     "task_cron": [
       {
