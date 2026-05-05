@@ -27,7 +27,10 @@
       {
         "name": "酷狗音乐签到",
         "cron": "30 8 * * *",
-        "command": "cd kgcheckin || exit 1\nfls_kill -p 3000\nnpm run main\nfls_kill -p 3000"
+        "command": "cd kgcheckin || exit 1\nfls_kill -p 3000\nnpm run main\nfls_kill -p 3000",
+        "var": {
+          "USERINFO": "[{\"userid\":123456789,\"token\":\"123456789987654321\"}]"
+        }
       },
       {
         "name": "酷狗音乐扫码",
