@@ -1,0 +1,22 @@
+{
+  "name": "签到盒任务列表",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "name": "签到盒 - 阿里云盘",
+      "cron": "10 8 * * *",
+      "command": "cd checkbox || exit 1\nprintf '%s\\n' \"$CHECKBOX_CONFIG_YML\" > config.yml\nnode checkbox.js aliyun",
+      "var": {
+        "CHECKBOX_CONFIG_YML": "needPush: false\ncbList: aliyun\n\naliyun:\n  refresh_token: \"你的refresh_token\"\n\nPush:\n  sckey: \"\"\n  qmsgkey: \"\"\n  pushplustoken: \"\""
+      }
+    },
+    {
+      "name": "签到盒 - 夸克网盘",
+      "cron": "15 8 * * *",
+      "command": "cd checkbox || exit 1\nprintf '%s\\n' \"$CHECKBOX_CONFIG_YML\" > config.yml\nnode checkbox.js quark",
+      "var": {
+        "CHECKBOX_CONFIG_YML": "needPush: false\ncbList: quark\n\nquark:\n  cookie:\n    - \"你的夸克cookie\"\n\nPush:\n  sckey: \"\"\n  qmsgkey: \"\"\n  pushplustoken: \"\""
+      }
+    }
+  ]
+}
