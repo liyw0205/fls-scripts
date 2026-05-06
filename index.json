@@ -6,14 +6,15 @@
     "link": "https://github.com/liyw0205/caiyun",
     "link_name": "caiyun_box",
     "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/caiyun@main/README.md",
-    "install": "",
+    "install": "cd caiyun_box\nif [ ! -f asign.json ]; then\n  cp default_asign.json asign.json\n  echo \"已生成 asign.json\"\nelse\n  echo \"asign.json 已存在，不覆盖\"\nfi",
     "task_cron": {
       "name": "中国移动云盘签到",
       "cron": "30 9,16,23 * * *",
-      "command": "task caiyun_box/run.mjs"
+      "command": "task caiyun_box/run.mjs",
+      "config_path": "caiyun_box/asign.json"
     },
-    "created_at": "2026-05-09 00:00:00",
-    "updated_at": "2026-05-09 00:00:00"
+    "created_at": "2026-05-07 00:00:00",
+    "updated_at": "2026-05-07 00:00:00"
   },
   {
     "id": "chinaUnicom",
@@ -27,12 +28,13 @@
       "name": "中国联通任务",
       "cron": "30 9,16 * * *",
       "command": "task chinaUnicom.py",
+      "config_path": "unicom_token_cache.json",
       "var": {
         "chinaUnicomCookie": "a3e4c1ff2xxxxxxxxx"
       }
     },
-    "created_at": "2026-05-09 00:00:00",
-    "updated_at": "2026-05-09 00:00:00"
+    "created_at": "2026-05-07 00:00:00",
+    "updated_at": "2026-05-07 00:00:00"
   },
   {
     "id": "kg",
@@ -57,8 +59,8 @@
         "command": "cd kgcheckin || exit 1\nfls_kill -p 3000\nnpm run qrcodeLogin\nfls_kill -p 3000"
       }
     ],
-    "created_at": "2026-05-09 00:00:00",
-    "updated_at": "2026-05-09 00:00:00"
+    "created_at": "2026-05-07 00:00:00",
+    "updated_at": "2026-05-07 00:00:00"
   },
   {
     "id": "cloud189checkin",
@@ -79,8 +81,8 @@
         "TY_PASSWORD_2": "密码2"
       }
     },
-    "created_at": "2026-05-09 00:00:00",
-    "updated_at": "2026-05-09 00:00:00"
+    "created_at": "2026-05-07 00:00:00",
+    "updated_at": "2026-05-07 00:00:00"
   },
   {
     "id": "checkbox",
@@ -89,9 +91,9 @@
     "link": "https://github.com/Wenmoux/checkbox.git",
     "link_name": "checkbox",
     "doc_link": "https://cdn.jsdelivr.net/gh/Wenmoux/checkbox@master/README.md",
-    "install": "cd checkbox\nnpm install",
+    "install": "cd checkbox || exit 1\nnpm install\nnpm install cheerio\nif [ ! -f config.yml ]; then\n  cp config.yml.temple config.yml\n  echo \"已生成 config.yml\"\nelse\n  echo \"config.yml 已存在，不覆盖\"\nfi",
     "task_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/checkbox/tasks.json",
-    "created_at": "2026-05-09 00:00:00",
-    "updated_at": "2026-05-09 00:00:00"
+    "created_at": "2026-05-07 00:00:00",
+    "updated_at": "2026-05-07 00:00:00"
   }
 ]

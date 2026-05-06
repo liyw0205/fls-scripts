@@ -1,22 +1,408 @@
 {
-  "name": "签到盒任务列表",
+  "name": "签到盒 checkbox 任务列表",
   "version": "1.0.0",
   "tasks": [
     {
+      "name": "签到盒 - 自定义合集",
+      "cron": "28 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js",
+      "config_path": "checkbox/config.yml"
+    },
+    {
       "name": "签到盒 - 阿里云盘",
       "cron": "10 8 * * *",
-      "command": "cd checkbox || exit 1\nprintf '%s\\n' \"$CHECKBOX_CONFIG_YML\" > config.yml\nnode checkbox.js aliyun",
-      "var": {
-        "CHECKBOX_CONFIG_YML": "needPush: false\ncbList: aliyun\n\naliyun:\n  refresh_token: \"你的refresh_token\"\n\nPush:\n  sckey: \"\"\n  qmsgkey: \"\"\n  pushplustoken: \"\""
-      }
+      "command": "cd checkbox || exit 1\nnode checkbox.js aliyun",
+      "config_path": "checkbox/config.yml"
     },
     {
       "name": "签到盒 - 夸克网盘",
+      "cron": "12 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js quark",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 云原神",
       "cron": "15 8 * * *",
-      "command": "cd checkbox || exit 1\nprintf '%s\\n' \"$CHECKBOX_CONFIG_YML\" > config.yml\nnode checkbox.js quark",
-      "var": {
-        "CHECKBOX_CONFIG_YML": "needPush: false\ncbList: quark\n\nquark:\n  cookie:\n    - \"你的夸克cookie\"\n\nPush:\n  sckey: \"\"\n  qmsgkey: \"\"\n  pushplustoken: \"\""
-      }
+      "command": "cd checkbox || exit 1\nnode checkbox.js yunys",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 小白云盘",
+      "cron": "18 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js xiaobai",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - HiFiNi",
+      "cron": "20 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hifini",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 科研通",
+      "cron": "22 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js ablesci",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - PDG2PDF",
+      "cron": "24 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js pdg2pdf",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - voapi",
+      "cron": "26 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js voapi",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 共创世界",
+      "cron": "28 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js ccw",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - linkai",
+      "cron": "30 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js linkai",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - Go柄",
+      "cron": "32 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js gobing",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 麦当劳 MCP",
+      "cron": "35 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js mcdonald",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 库街区",
+      "cron": "38 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js kurobbs",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - NGA",
+      "cron": "40 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js nga",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 起点读书",
+      "cron": "42 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js qidian",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 刺猬猫小说",
+      "cron": "44 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hbooker",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 多看阅读",
+      "cron": "46 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js duokan",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - ACFUN",
+      "cron": "48 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js acfun",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 猫耳FM",
+      "cron": "50 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js missevan",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 魅族社区",
+      "cron": "52 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js meizu",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - MT论坛",
+      "cron": "54 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js mt_sign",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 天使动漫签到打工",
+      "cron": "56 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js tsdm",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 天使动漫仅签到",
+      "cron": "58 8 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js tsdmsign",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 天使动漫仅打工",
+      "cron": "0 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js tsdmwork",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 鱼C论坛",
+      "cron": "2 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js fishc",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 数码之家",
+      "cron": "4 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js mydigit",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 阅次元论坛",
+      "cron": "6 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js abooky",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - Hires后花园",
+      "cron": "8 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js dsdlove",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 海贼王论坛",
+      "cron": "10 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hzw",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 曲奇云盘",
+      "cron": "12 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js quqi",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 医生圈",
+      "cron": "14 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js mediportal",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 游戏动力",
+      "cron": "16 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js gamepower",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 闪艺",
+      "cron": "18 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js shanyi",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 黑丝次元",
+      "cron": "20 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hscy",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 泡芙加速器",
+      "cron": "22 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js pfjsq",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 克拉漫播每日任务",
+      "cron": "24 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js dailyTask",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 克拉漫播挂机",
+      "cron": "30 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js vdrama",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 月影别墅",
+      "cron": "35 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js yybs_check",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 香蕉视频",
+      "cron": "40 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js xjvideo",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 17K小说",
+      "cron": "45 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js 17k",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 爱吾游戏宝盒",
+      "cron": "50 9 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js aw",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 论坛签到合集",
+      "cron": "0 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js abooky fishc mydigit hifini dsdlove hzw",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 阅读类合集",
+      "cron": "10 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js qidian hbooker duokan 17k linovel hwnovel",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 4399游乐城",
+      "cron": "20 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js 4399_ylc",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 4399等级小怪",
+      "cron": "25 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js 4399_monster",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 4399页游签到",
+      "cron": "30 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js 4399_yy",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 4399游戏福利社",
+      "cron": "35 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js 4399_fulizx",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 好游快爆",
+      "cron": "40 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hykb",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 好游快爆临时任务",
+      "cron": "45 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hykb_activities",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - Qoo",
+      "cron": "50 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js Qoo",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 立创",
+      "cron": "55 10 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js oshwhub",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 捷配",
+      "cron": "0 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js jiepei",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 轻之文库",
+      "cron": "5 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js linovel",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 次元姬小说",
+      "cron": "10 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js hwnovel",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 触站",
+      "cron": "15 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js huashi6",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 网易云游戏",
+      "cron": "20 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js cg163",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 网易蜗牛读书",
+      "cron": "25 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js du163",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 时光相册",
+      "cron": "30 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js everphoto",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 联想延保",
+      "cron": "35 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js lenovo",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 联动云租车",
+      "cron": "40 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js ldygo",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 玩吧",
+      "cron": "45 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js wb",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 玩物志好物商店",
+      "cron": "50 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js coolbuy",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 香网小说",
+      "cron": "55 11 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js xiang5",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 瞻彼文学",
+      "cron": "0 12 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js zbwx",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 绅士领域",
+      "cron": "5 12 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js ssly",
+      "config_path": "checkbox/config.yml"
+    },
+    {
+      "name": "签到盒 - 奥拉星",
+      "cron": "10 12 * * *",
+      "command": "cd checkbox || exit 1\nnode checkbox.js aoqi",
+      "config_path": "checkbox/config.yml"
     }
   ]
 }
