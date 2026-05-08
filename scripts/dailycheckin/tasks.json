@@ -1,0 +1,128 @@
+[
+  {
+    "name": "DailyCheckIn 全部签到",
+    "cron": "0 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main",
+    "config_path": "dailycheckin/config.json",
+    "remark": "执行 config.json 中已配置的全部 DailyCheckIn 签到任务"
+  },
+  {
+    "name": "DailyCheckIn 更新依赖",
+    "cron": "0 */12 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m pip install dailycheckin --upgrade --user\n${FLS_PYTHON:-python3} -m pip install -r requirements.txt",
+    "config_path": "dailycheckin/config.json",
+    "remark": "定时更新 DailyCheckIn PyPI 包和仓库依赖"
+  },
+  {
+    "name": "DailyCheckIn AcFun",
+    "cron": "5 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include ACFUN",
+    "config_path": "dailycheckin/config.json",
+    "remark": "AcFun 每日签到"
+  },
+  {
+    "name": "DailyCheckIn 奥拉星",
+    "cron": "8 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include AOLAXING",
+    "config_path": "dailycheckin/config.json",
+    "remark": "奥拉星每日任务"
+  },
+  {
+    "name": "DailyCheckIn 阿里云盘",
+    "cron": "10 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include ALIYUN",
+    "config_path": "dailycheckin/config.json",
+    "remark": "阿里云盘签到"
+  },
+  {
+    "name": "DailyCheckIn 百度站点提交",
+    "cron": "15 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include BAIDU",
+    "config_path": "dailycheckin/config.json",
+    "remark": "百度站点链接提交"
+  },
+  {
+    "name": "DailyCheckIn 百度网盘会员",
+    "cron": "18 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include BAIDUWP",
+    "config_path": "dailycheckin/config.json",
+    "remark": "百度网盘会员成长值签到和答题"
+  },
+  {
+    "name": "DailyCheckIn Bilibili",
+    "cron": "20 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include BILIBILI",
+    "config_path": "dailycheckin/config.json",
+    "remark": "Bilibili 漫画签到、直播签到、经验任务、投币等"
+  },
+  {
+    "name": "DailyCheckIn 恩山无线论坛",
+    "cron": "25 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include ENSHAN",
+    "config_path": "dailycheckin/config.json",
+    "remark": "恩山无线论坛签到"
+  },
+  {
+    "name": "DailyCheckIn 飞牛 NAS",
+    "cron": "28 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include FNNASCLUB",
+    "config_path": "dailycheckin/config.json",
+    "remark": "飞牛 NAS 论坛签到"
+  },
+  {
+    "name": "DailyCheckIn i茅台",
+    "cron": "35 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include IMAOTAI",
+    "config_path": "dailycheckin/config.json",
+    "remark": "i茅台申购，建议在 09:00-10:00 时间段执行"
+  },
+  {
+    "name": "DailyCheckIn 爱奇艺",
+    "cron": "40 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include IQIYI",
+    "config_path": "dailycheckin/config.json",
+    "remark": "爱奇艺签到、抽奖、会员成长任务"
+  },
+  {
+    "name": "DailyCheckIn 全民 K 歌",
+    "cron": "45 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include KGQQ",
+    "config_path": "dailycheckin/config.json",
+    "remark": "全民 K 歌签到领取鲜花"
+  },
+  {
+    "name": "DailyCheckIn 小米运动",
+    "cron": "50 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include MIMOTION",
+    "config_path": "dailycheckin/config.json",
+    "remark": "小米运动刷步数"
+  },
+  {
+    "name": "DailyCheckIn 什么值得买",
+    "cron": "55 9 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include SMZDM",
+    "config_path": "dailycheckin/config.json",
+    "remark": "什么值得买签到和抽奖"
+  },
+  {
+    "name": "DailyCheckIn 百度贴吧",
+    "cron": "0 10 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include TIEBA",
+    "config_path": "dailycheckin/config.json",
+    "remark": "百度贴吧自动签到"
+  },
+  {
+    "name": "DailyCheckIn V2EX",
+    "cron": "5 10 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include V2EX",
+    "config_path": "dailycheckin/config.json",
+    "remark": "V2EX 每日签到"
+  },
+  {
+    "name": "DailyCheckIn 有道云笔记",
+    "cron": "10 10 * * *",
+    "command": "cd dailycheckin || exit 1\n${FLS_PYTHON:-python3} -m dailycheckin.main --include YOUDAO",
+    "config_path": "dailycheckin/config.json",
+    "remark": "有道云笔记签到领取空间"
+  }
+]
