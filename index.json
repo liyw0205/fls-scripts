@@ -88,6 +88,32 @@
     "task_link": ""
   },
   {
+    "id": "netease_music_checkin",
+    "name": "网易云音乐签到刷歌",
+    "type": "raw",
+    "link": "https://github.com/liyw0205/fls-scripts/raw/refs/heads/main/scripts/neteaseMusic/netease_music_checkin.py",
+    "link_name": "neteaseMusic/netease_music_checkin.py",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/neteaseMusic/README.md",
+    "install": "${FLS_PYTHON:-python3} -m pip install requests pycryptodome",
+    "task_cron": [
+      {
+        "name": "网易云音乐签到刷歌",
+        "cron": "30 7,22 * * *",
+        "command": "task neteaseMusic/netease_music_checkin.py",
+        "var": {
+          "NETEASE_COOKIE": "",
+          "NETEASE_USER": "",
+          "NETEASE_PWD": ""
+        },
+        "remark": "推荐填写 NETEASE_COOKIE，多账号用 # 分隔；也支持 NETEASE_USER 和 NETEASE_PWD。",
+        "config_path": ""
+      }
+    ],
+    "created_at": "2026-06-13 00:00:00",
+    "updated_at": "2026-06-13 00:00:00",
+    "task_link": ""
+  },
+  {
     "id": "cloud189checkin",
     "name": "天翼云盘自动签到",
     "type": "repo",
