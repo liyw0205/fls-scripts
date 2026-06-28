@@ -108,6 +108,84 @@ def split_accounts(value):
     return [item.strip() for item in value.split("#") if item.strip()]
 
 
+def parse_song_ids_optional(value):
+    if not value or not str(value).strip():
+        return []
+    ids = []
+    for part in str(value).replace("，", ",").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if part.isdigit():
+            ids.append(int(part))
+        else:
+            print("忽略无效歌曲 ID：" + part)
+    return ids
+
+
+def parse_playlist_id_optional(value):
+    if not value or not str(value).strip():
+        return None
+    text = str(value).strip()
+    if text.isdigit():
+        return int(text)
+    for part in text.replace("，", ",").split(","):
+        part = part.strip()
+        if part.isdigit():
+            return int(part)
+    print("忽略无效歌单 ID：" + text)
+    return None
+
+
+DEFAULT_PLAY_COUNT = 310
+
+
+def play_log_entry(song_id):
+    return {
+        "action": "play",
+        "json": {
+            "download": 0,
+            "end": "playend",
+            "id": song_id,
+            "sourceId": "",
+            "time": "240",
+            "type": "song",
+            "wifi": 0,
+        },
+    }
+
+
+def fill_buffer_from_track_ids(track_ids, target_count):
+    buffer = []
+    count = 0
+    if not track_ids:
+        return buffer, count
+    index = 0
+    while count < target_count:
+        tid = track_ids[index % len(track_ids)]
+        song_id = tid["id"] if isinstance(tid, dict) else tid
+        buffer.append(play_log_entry(song_id))
+        count += 1
+        index += 1
+    return buffer, count
+
+
+def fetch_playlist_track_ids(session, playlist_id, csrf_token):
+    url = "https://music.163.com/weapi/v3/playlist/detail?csrf_token=" + csrf_token
+    data = {
+        "id": playlist_id,
+        "n": 1000,
+        "csrf_token": csrf_token,
+    }
+    res = session.post(url, protect(json.dumps(data)), headers=HEADERS, timeout=30)
+    result = json.loads(res.text, strict=False)
+    playlist = result.get("playlist")
+    if not playlist:
+        message = result.get("msg") or result.get("message") or str(result.get("code"))
+        raise CheckinError("获取歌单失败（id=" + str(playlist_id) + "）：" + message)
+    return playlist.get("trackIds", [])
+
+
 def get_args():
     parser = argparse.ArgumentParser(description="网易云音乐自动签到 + 刷歌")
     parser.add_argument(
@@ -124,6 +202,22 @@ def get_args():
         "--password",
         default=first_env("NETEASE_PWD", "NETEASE_PASSWORD", "NCM_PWD", "NCM_PASSWORD"),
         help="密码，多账号用 # 分隔",
+    )
+    parser.add_argument(
+        "--song-ids",
+        default=first_env("NETEASE_SONG_IDS", "NCM_SONG_IDS"),
+        help="指定刷歌的歌曲 ID，逗号分隔；会循环上报直到达到刷歌数量",
+    )
+    parser.add_argument(
+        "--playlist-id",
+        default=first_env("NETEASE_PLAYLIST_ID", "NCM_PLAYLIST_ID"),
+        help="指定歌单 ID，从该歌单取曲目刷歌（优先于每日推荐）",
+    )
+    parser.add_argument(
+        "--play-count",
+        type=int,
+        default=int(first_env("NETEASE_PLAY_COUNT", "NCM_PLAY_COUNT") or DEFAULT_PLAY_COUNT),
+        help="刷歌上报条数，默认 " + str(DEFAULT_PLAY_COUNT),
     )
     return parser.parse_args()
 
@@ -191,7 +285,7 @@ def daily_task(session):
     raise CheckinError("签到时发生错误：" + str(last_message))
 
 
-def build_play_logs(session, csrf_token):
+def build_play_logs_from_recommend(session, csrf_token, target_count):
     res = session.post(
         url=RECOMMEND_URL,
         data=protect(json.dumps({"csrf_token": csrf_token})),
@@ -207,36 +301,38 @@ def build_play_logs(session, csrf_token):
     buffer = []
     count = 0
     for playlist in recommend:
-        url = "https://music.163.com/weapi/v3/playlist/detail?csrf_token=" + csrf_token
-        data = {
-            "id": playlist["id"],
-            "n": 1000,
-            "csrf_token": csrf_token,
-        }
-        res = session.post(url, protect(json.dumps(data)), headers=HEADERS, timeout=30)
-        result = json.loads(res.text, strict=False)
-        tracks = result.get("playlist", {}).get("trackIds", [])
+        tracks = fetch_playlist_track_ids(session, playlist["id"], csrf_token)
         for track in tracks:
-            buffer.append(
-                {
-                    "action": "play",
-                    "json": {
-                        "download": 0,
-                        "end": "playend",
-                        "id": track["id"],
-                        "sourceId": "",
-                        "time": "240",
-                        "type": "song",
-                        "wifi": 0,
-                    },
-                }
-            )
+            buffer.append(play_log_entry(track["id"]))
             count += 1
-            if count >= 310:
+            if count >= target_count:
                 break
-        if count >= 310:
+        if count >= target_count:
             break
     return buffer, count
+
+
+def build_play_logs(session, csrf_token, song_ids=None, playlist_id=None, target_count=DEFAULT_PLAY_COUNT):
+    if song_ids:
+        print("使用指定歌曲 ID 刷歌：" + ",".join(str(i) for i in song_ids))
+        return fill_buffer_from_track_ids(song_ids, target_count)
+
+    if playlist_id is not None:
+        print("使用指定歌单 ID 刷歌：" + str(playlist_id))
+        track_ids = []
+        try:
+            track_ids = fetch_playlist_track_ids(session, playlist_id, csrf_token)
+        except CheckinError as exc:
+            print(str(exc) + "，改用每日推荐")
+        except Exception as exc:
+            print("获取歌单失败：" + str(exc) + "，改用每日推荐")
+        if track_ids:
+            return fill_buffer_from_track_ids(track_ids, target_count)
+        if playlist_id is not None:
+            print("歌单内没有可刷曲目，改用每日推荐")
+
+    print("使用每日推荐歌单刷歌")
+    return build_play_logs_from_recommend(session, csrf_token, target_count)
 
 
 def send_play_logs(session, buffer, count):
@@ -257,7 +353,14 @@ def send_play_logs(session, buffer, count):
     )
 
 
-def run_account(cookie_text=None, phone=None, password=None):
+def run_account(
+    cookie_text=None,
+    phone=None,
+    password=None,
+    song_ids=None,
+    playlist_id=None,
+    play_count=DEFAULT_PLAY_COUNT,
+):
     session = requests.Session()
 
     if cookie_text:
@@ -267,24 +370,32 @@ def run_account(cookie_text=None, phone=None, password=None):
 
     csrf_token = get_csrf(cookie_dict)
     daily_task(session)
-    buffer, count = build_play_logs(session, csrf_token)
+    buffer, count = build_play_logs(
+        session,
+        csrf_token,
+        song_ids=song_ids,
+        playlist_id=playlist_id,
+        target_count=play_count,
+    )
+    if count < 1:
+        raise CheckinError("没有生成任何刷歌记录")
     send_play_logs(session, buffer, count)
 
 
-def run_cookie_accounts(cookies):
+def run_cookie_accounts(cookies, play_options):
     failed = 0
     print("共有 " + str(len(cookies)) + " 个 Cookie，即将开始签到")
     for index, cookie_text in enumerate(cookies, 1):
         print("========== Cookie 账号 " + str(index) + " ==========")
         try:
-            run_account(cookie_text=cookie_text)
+            run_account(cookie_text=cookie_text, **play_options)
         except Exception as exc:
             failed += 1
             print("账号 " + str(index) + " 执行失败：" + str(exc))
     return failed
 
 
-def run_password_accounts(phones, passwords):
+def run_password_accounts(phones, passwords, play_options):
     if len(phones) != len(passwords):
         raise CheckinError(
             "账号和密码个数不对应：账号 "
@@ -299,25 +410,43 @@ def run_password_accounts(phones, passwords):
     for index, (phone, password) in enumerate(zip(phones, passwords), 1):
         print("========== 手机号账号 " + str(index) + " ==========")
         try:
-            run_account(phone=phone, password=password)
+            run_account(phone=phone, password=password, **play_options)
         except Exception as exc:
             failed += 1
             print("账号 " + str(index) + " 执行失败：" + str(exc))
     return failed
 
 
+def resolve_play_options(args):
+    song_ids = parse_song_ids_optional(args.song_ids)
+    playlist_id = parse_playlist_id_optional(args.playlist_id)
+    if song_ids:
+        playlist_id = None
+    elif playlist_id is None:
+        print("未配置有效歌曲/歌单 ID，使用每日推荐刷歌")
+    play_count = args.play_count
+    if play_count < 1:
+        raise CheckinError("play-count 至少为 1")
+    return {
+        "song_ids": song_ids if song_ids else None,
+        "playlist_id": playlist_id,
+        "play_count": play_count,
+    }
+
+
 def main():
     args = get_args()
+    play_options = resolve_play_options(args)
 
     cookies = split_accounts(args.cookie)
     if cookies:
-        failed = run_cookie_accounts(cookies)
+        failed = run_cookie_accounts(cookies, play_options)
     else:
         phones = split_accounts(args.phone)
         passwords = split_accounts(args.password)
         if not phones or not passwords:
             raise CheckinError("请设置 NETEASE_COOKIE，或同时设置 NETEASE_USER 和 NETEASE_PWD")
-        failed = run_password_accounts(phones, passwords)
+        failed = run_password_accounts(phones, passwords, play_options)
 
     if failed:
         sys.exit(1)

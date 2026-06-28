@@ -103,14 +103,17 @@
         "var": {
           "NETEASE_COOKIE": "",
           "NETEASE_USER": "",
-          "NETEASE_PWD": ""
+          "NETEASE_PWD": "",
+          "NETEASE_SONG_IDS": "",
+          "NETEASE_PLAYLIST_ID": "",
+          "NETEASE_PLAY_COUNT": "310"
         },
-        "remark": "推荐填写 NETEASE_COOKIE，多账号用 # 分隔；也支持 NETEASE_USER 和 NETEASE_PWD。",
+        "remark": "推荐 NETEASE_COOKIE（多账号 # 分隔）。刷歌：填 NETEASE_SONG_IDS（逗号分隔歌曲 id）或 NETEASE_PLAYLIST_ID（歌单 id）；两者都空或无效时用每日推荐。同时填歌曲 id 时优先歌曲。",
         "config_path": ""
       }
     ],
     "created_at": "2026-06-13 00:00:00",
-    "updated_at": "2026-06-13 00:00:00",
+    "updated_at": "2026-06-28 00:00:00",
     "task_link": ""
   },
   {
