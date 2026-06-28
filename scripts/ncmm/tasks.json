@@ -1,0 +1,50 @@
+{
+  "name": "ncmm 网易云音乐人助手",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "name": "ncmm - 安装/更新二进制与配置",
+      "cron": "",
+      "command": "cd ncmm || exit 1\nmkdir -p fls log database/badger\nfor f in fls_detect_arch.sh fls_login_cookie.sh fls_run.sh; do\n  curl -fsSL -o \"fls/$f\" \"https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/$f\" || wget -q -O \"fls/$f\" \"https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/$f\"\n  chmod +x \"fls/$f\"\ndone\nARCH=$(sh fls/fls_detect_arch.sh)\nVER=v1.1.7\nURL=\"https://github.com/3899/ncmm/releases/download/${VER}/ncmm_${ARCH}.tar.gz\"\necho \"下载 ${URL}\"\ncurl -fsSL -o /tmp/ncmm_fls.tgz \"$URL\" || wget -q -O /tmp/ncmm_fls.tgz \"$URL\"\ntar -xzf /tmp/ncmm_fls.tgz -C .\nchmod +x ncmm 2>/dev/null || true\nif [ ! -f config.yaml ]; then\n  if [ -f config/config.yaml ]; then cp config/config.yaml config.yaml\n  else curl -fsSL -o config.yaml \"https://raw.githubusercontent.com/3899/ncmm/main/config/config.yaml\"; fi\n  echo \"已生成 config.yaml\"\nelse\n  echo \"config.yaml 已存在，不覆盖\"\nfi\n./ncmm -v || true",
+      "remark": "首次使用或升级 ncmm 时手动运行。从 Release 拉取本机架构二进制，并同步 FLS 包装脚本到 ncmm/fls/。"
+    },
+    {
+      "name": "ncmm - 一键批量任务",
+      "cron": "0 30 7 * * *",
+      "command": "NCMM_CMD=task sh ncmm/fls/fls_run.sh",
+      "var": {
+        "NETEASE_COOKIE": ""
+      },
+      "remark": "按 config.yaml 的 task 开关执行签到、刷歌、音乐人、乐迷团等。有 NETEASE_COOKIE 时会尝试导入账号（多账号用 #MUSIC_U= 衔接）。与轻量 Python 刷歌脚本二选一或并存。",
+      "config_path": "ncmm/config.yaml"
+    },
+    {
+      "name": "ncmm - 每日签到",
+      "cron": "0 15 8 * * *",
+      "command": "NCMM_CMD=sign sh ncmm/fls/fls_run.sh",
+      "var": {
+        "NETEASE_COOKIE": ""
+      },
+      "remark": "黑胶 VIP、云贝、音乐人签到等。",
+      "config_path": "ncmm/config.yaml"
+    },
+    {
+      "name": "ncmm - 音乐人任务",
+      "cron": "",
+      "command": "NCMM_CMD=musician sh ncmm/fls/fls_run.sh",
+      "var": {
+        "NETEASE_COOKIE": ""
+      },
+      "config_path": "ncmm/config.yaml"
+    },
+    {
+      "name": "ncmm - 乐迷团任务",
+      "cron": "",
+      "command": "NCMM_CMD=fansgroup sh ncmm/fls/fls_run.sh",
+      "var": {
+        "NETEASE_COOKIE": ""
+      },
+      "config_path": "ncmm/config.yaml"
+    }
+  ]
+}

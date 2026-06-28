@@ -3,6 +3,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import sys
 from http.cookies import SimpleCookie
 
@@ -105,7 +106,15 @@ def first_env(*names):
 def split_accounts(value):
     if not value:
         return []
-    return [item.strip() for item in value.split("#") if item.strip()]
+    text = value.strip()
+    if not text:
+        return []
+    # 多账号约定用「#MUSIC_U=」衔接；勿按裸 # 切（P_INFO 等字段内含 #）
+    parts = re.split(r"(?=#MUSIC_U=)", text)
+    accounts = [item.strip() for item in parts if item.strip()]
+    if len(accounts) > 1:
+        return accounts
+    return [text]
 
 
 def parse_song_ids_optional(value):

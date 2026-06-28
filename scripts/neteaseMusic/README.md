@@ -10,10 +10,10 @@
 NETEASE_COOKIE=MUSIC_U=xxx; __csrf=xxx
 ```
 
-多账号用 `#` 分隔：
+多账号用 `#MUSIC_U=` 衔接下一段（第二账号从 `MUSIC_U=` 开始），不要用裸 `#` 切整段 Cookie（`P_INFO` 等字段里会有 `#`）。
 
 ```text
-NETEASE_COOKIE=MUSIC_U=xxx; __csrf=xxx#MUSIC_U=yyy; __csrf=yyy
+MUSIC_U=xxx; __csrf=aaa; ...#MUSIC_U=yyy; __csrf=bbb; ...
 ```
 
 也支持手机号密码登录：

@@ -108,13 +108,25 @@
           "NETEASE_PLAYLIST_ID": "",
           "NETEASE_PLAY_COUNT": "310"
         },
-        "remark": "推荐 NETEASE_COOKIE（多账号 # 分隔）。刷歌：填 NETEASE_SONG_IDS（逗号分隔歌曲 id）或 NETEASE_PLAYLIST_ID（歌单 id）；两者都空或无效时用每日推荐。同时填歌曲 id 时优先歌曲。",
+        "remark": "推荐 NETEASE_COOKIE（多账号用 #MUSIC_U= 衔接，勿用裸 # 切 Cookie，P_INFO 内含 #）。刷歌：NETEASE_SONG_IDS 或 NETEASE_PLAYLIST_ID；都空或无效用每日推荐。",
         "config_path": ""
       }
     ],
     "created_at": "2026-06-13 00:00:00",
     "updated_at": "2026-06-28 00:00:00",
     "task_link": ""
+  },
+  {
+    "id": "ncmm",
+    "name": "ncmm 网易云音乐人助手",
+    "type": "repo",
+    "link": "https://github.com/3899/ncmm.git",
+    "link_name": "ncmm",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/README.md",
+    "install": "cd ncmm || exit 1\nmkdir -p fls log database/badger\nfor f in fls_detect_arch.sh fls_login_cookie.sh fls_run.sh; do\n  curl -fsSL -o \"fls/$f\" \"https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/$f\" || wget -q -O \"fls/$f\" \"https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/$f\"\n  chmod +x \"fls/$f\"\ndone\nif [ ! -f config.yaml ]; then\n  if [ -f config/config.yaml ]; then cp config/config.yaml config.yaml\n  else curl -fsSL -o config.yaml \"https://raw.githubusercontent.com/3899/ncmm/main/config/config.yaml\"; fi\n  echo \"已生成 config.yaml（请再运行任务：ncmm - 安装/更新二进制与配置）\"\nelse\n  echo \"config.yaml 已存在，不覆盖\"\nfi",
+    "task_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/ncmm/tasks.json",
+    "created_at": "2026-06-28 12:00:00",
+    "updated_at": "2026-06-28 12:00:00"
   },
   {
     "id": "cloud189checkin",

@@ -3,6 +3,8 @@
 这是一个适用于 **FLS 面板** 的在线脚本源 `index.json` 示例。  
 FLS 面板可以通过该 JSON 读取可安装脚本列表，并支持一键拉取、安装、导入任务、编辑配置和定时运行。
 
+FLS 面板项目仓库：[liyw0205/fls](https://github.com/liyw0205/fls)（Flask Lightweight Script Manager，支持 Linux / Windows / Termux）。
+
 ---
 
 ## 脚本源地址
@@ -38,6 +40,8 @@ https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/index.json
 | `kg` | 酷狗音乐签到 | `repo` | 酷狗签到 / 扫码 |
 | `cloud189checkin` | 天翼云盘自动签到 | `repo` | 天翼云盘签到 |
 | `checkbox` | 签到盒 checkbox | `repo` | 集合型签到仓库，通过 `task_link` 加载任务列表 |
+| `netease_music_checkin` | 网易云音乐签到刷歌 | `raw` | 轻量 Python 签到与刷歌 |
+| `ncmm` | ncmm 网易云音乐人助手 | `repo` | [3899/ncmm](https://github.com/3899/ncmm) Go 二进制：云贝/VIP/音乐人/乐迷团；安装后需运行「安装/更新二进制」任务 |
 
 ---
 
