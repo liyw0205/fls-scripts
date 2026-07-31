@@ -12,7 +12,8 @@
         "name": "中国移动云盘签到",
         "cron": "30 9,16,23 * * *",
         "command": "task caiyun_box/run.mjs",
-        "config_path": "caiyun_box/asign.json"
+        "config_path": "caiyun_box/asign.json",
+        "remark": "自动识别 mcloud-*.mjs 主程序执行签到任务。"
       },
       {
         "name": "中国移动云盘兑换",
@@ -22,19 +23,19 @@
           "ACCOUNT_NO": "1",
           "EXCHANGE_ID": "231228012"
         },
-        "remark": "兑换商品。EXCHANGE_ID 为商品ID，ACCOUNT_NO 为账号下标，config[1] 对应 ACCOUNT_NO=1。",
+        "remark": "兑换商品。EXCHANGE_ID 为商品ID或名称，ACCOUNT_NO 为账号序号（从1开始），也可用 ACCOUNT_INDEX/ACCOUNT_NAME。",
         "config_path": "caiyun_box/asign.json"
       },
       {
         "name": "中国移动云盘奖品ID查询",
         "cron": "",
         "command": "task caiyun_box/ExchangeList.py",
-        "remark": "查询云朵兑换奖品ID并生成 ExchangeList.json。",
+        "remark": "查询云朵兑换奖品ID。可用 ExchangeList.py 生成 ExchangeList.json，或用 list.mjs 直接打印列表。",
         "config_path": "caiyun_box/ExchangeList.json"
       }
     ],
     "created_at": "2026-05-07 00:00:00",
-    "updated_at": "2026-05-09 18:30:00",
+    "updated_at": "2026-08-01 07:51:57",
     "task_link": ""
   },
   {
