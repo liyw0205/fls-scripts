@@ -495,7 +495,7 @@ curl_wrapper() {
     if [ "$AUTH_MODE" = "cookie" ]; then
         auth_header="Cookie: $SESSION_COOKIE"
     else
-        auth_header="Authorization: Bearer $TOKEN"
+        auth_header="Authorization: Bearer ${TOKEN}"
     fi
 
     json_data=$($curl_path -s --connect-timeout 8 --max-time 45 \
