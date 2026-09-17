@@ -12,6 +12,7 @@ ACCOUNTS=""
 ACCOUNT_COUNT=0
 SUCCESS_COUNT=0
 FAIL_COUNT=0
+SKIP_COUNT=0
 
 AUTH_MODE=""
 USER_ID=""
@@ -40,6 +41,10 @@ usage() {
     echo "  token 模式可配合 user_id 变量使用，也可写成 tokens=user_id#token[#url]。"
     echo "  cookie 模式可配合 user_id 变量使用，也可写成 user_id#cookie[#url]。"
     echo "  url 可省略，默认 ${DEFAULT_URL}；url 不带协议时自动补 https://。"
+    echo "  请求默认走 IPv4（curl_ip=4），避免 futureppo 等站的 IPv6 Cloudflare 挑战；curl_ip=auto 不强制。"
+    echo "  可选 HTTP_PROXY/http_proxy，或 host_proxies=futureppo.top=http://127.0.0.1:7890。"
+    echo "  skip_hosts 可选，逗号分隔主机名，匹配到的账号不请求、不算失败。"
+    echo "  不要把代理账号写入脚本、README、index.json 或日志。"
     echo ""
     echo "示例："
     echo "  user_id='123,456' token='aaa,bbb' url='1.com,2.com' $0"
@@ -61,6 +66,91 @@ normalize_base_url() {
         http://*|https://*) echo "$raw" ;;
         *) echo "https://$raw" ;;
     esac
+}
+
+url_host() {
+    printf '%s' "$1" | sed 's|^[a-zA-Z][a-zA-Z0-9+.-]*://||; s|/.*||'
+}
+
+should_skip_host() {
+    local host
+    local raw
+    local part
+    local rest
+
+    host=$(url_host "$1")
+    raw=$(trim "${skip_hosts:-${SKIP_HOSTS:-}}")
+    [ -z "$raw" ] && return 1
+    case "$raw" in
+        none|off|false|0|-) return 1 ;;
+    esac
+
+    rest="$raw"
+    while [ -n "$rest" ]; do
+        case "$rest" in
+            *,*)
+                part="${rest%%,*}"
+                rest="${rest#*,}"
+                ;;
+            *)
+                part="$rest"
+                rest=""
+                ;;
+        esac
+        part=$(trim "$part")
+        [ -z "$part" ] && continue
+        case "$host" in
+            *"$part"*) return 0 ;;
+        esac
+    done
+    return 1
+}
+
+pick_proxy() {
+    local host
+    local raw
+    local part
+    local rest
+    local key
+    local value
+
+    host=$(url_host "$1")
+    raw=$(trim "${host_proxies:-${HOST_PROXIES:-}}")
+    rest="$raw"
+    while [ -n "$rest" ]; do
+        case "$rest" in
+            *,*)
+                part="${rest%%,*}"
+                rest="${rest#*,}"
+                ;;
+            *)
+                part="$rest"
+                rest=""
+                ;;
+        esac
+        part=$(trim "$part")
+        [ -z "$part" ] && continue
+        case "$part" in
+            *=*)
+                key=$(trim "${part%%=*}")
+                value=$(trim "${part#*=}")
+                if [ -n "$key" ] && [ -n "$value" ]; then
+                    case "$host" in
+                        *"$key"*)
+                            printf '%s' "$value"
+                            return 0
+                            ;;
+                    esac
+                fi
+                ;;
+        esac
+    done
+
+    if [ -n "${HTTP_PROXY:-${http_proxy:-}}" ]; then
+        printf '%s' "${HTTP_PROXY:-$http_proxy}"
+        return 0
+    fi
+    return 1
 }
 
 normalize_session_cookie() {
@@ -498,32 +588,83 @@ curl_wrapper() {
         auth_header="Authorization: Bearer ${TOKEN}"
     fi
 
-    json_data=$($curl_path -s --connect-timeout 8 --max-time 45 \
-        -X "$method" "${BASE_URL}${endpoint}" \
-        -H "new-api-user: $USER_ID" \
-        -H "$auth_header" \
-        -H 'User-Agent: Mozilla/5.0 (Linux; Android; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' \
-        -H 'Accept: application/json, text/plain, */*' \
-        -H 'sec-ch-ua-platform: "Android"' \
-        -H 'sec-ch-ua: "Chromium";v="146", "Not-A.Brand";v="24", "Android WebView";v="146"' \
-        -H 'sec-ch-ua-mobile: ?1' \
-        -H "origin: $BASE_URL" \
-        -H "referer: ${BASE_URL}/console/personal" \
-        -H 'x-requested-with: mark.via' \
-        -H 'sec-fetch-site: same-origin' \
-        -H 'sec-fetch-mode: cors' \
-        -H 'sec-fetch-dest: empty' \
-        -H 'accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
-        -H 'priority: u=1,i' \
-        ${data:+-H 'Content-Type: application/json' -d "$data"} \
-        2>/dev/null)
+    local proxy
+    local ip_flag=""
+    proxy=$(pick_proxy "$BASE_URL" || true)
+
+    case "$(trim "${curl_ip:-${CURL_IP:-4}}")" in
+        6|v6|ipv6|IPv6) ip_flag="-6" ;;
+        auto|off|none) ip_flag="" ;;
+        *) ip_flag="-4" ;;
+    esac
+
+    if [ -n "$proxy" ]; then
+        json_data=$($curl_path -sL $ip_flag --proxy "$proxy" --connect-timeout 8 --max-time 45 \
+            -X "$method" "${BASE_URL}${endpoint}" \
+            -H "new-api-user: $USER_ID" \
+            -H "$auth_header" \
+            -H 'User-Agent: Mozilla/5.0 (Linux; Android; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'sec-ch-ua-platform: "Android"' \
+            -H 'sec-ch-ua: "Chromium";v="146", "Not-A.Brand";v="24", "Android WebView";v="146"' \
+            -H 'sec-ch-ua-mobile: ?1' \
+            -H "origin: $BASE_URL" \
+            -H "referer: ${BASE_URL}/console/personal" \
+            -H 'x-requested-with: mark.via' \
+            -H 'sec-fetch-site: same-origin' \
+            -H 'sec-fetch-mode: cors' \
+            -H 'sec-fetch-dest: empty' \
+            -H 'accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
+            -H 'priority: u=1,i' \
+            ${data:+-H 'Content-Type: application/json' -d "$data"} \
+            2>/dev/null)
+    else
+        json_data=$($curl_path -sL $ip_flag --connect-timeout 8 --max-time 45 \
+            -X "$method" "${BASE_URL}${endpoint}" \
+            -H "new-api-user: $USER_ID" \
+            -H "$auth_header" \
+            -H 'User-Agent: Mozilla/5.0 (Linux; Android; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'sec-ch-ua-platform: "Android"' \
+            -H 'sec-ch-ua: "Chromium";v="146", "Not-A.Brand";v="24", "Android WebView";v="146"' \
+            -H 'sec-ch-ua-mobile: ?1' \
+            -H "origin: $BASE_URL" \
+            -H "referer: ${BASE_URL}/console/personal" \
+            -H 'x-requested-with: mark.via' \
+            -H 'sec-fetch-site: same-origin' \
+            -H 'sec-fetch-mode: cors' \
+            -H 'sec-fetch-dest: empty' \
+            -H 'accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
+            -H 'priority: u=1,i' \
+            ${data:+-H 'Content-Type: application/json' -d "$data"} \
+            2>/dev/null)
+    fi
 
     if [ -z "$json_data" ]; then
         ui_print "请求失败：无响应 (${BASE_URL}${endpoint})"
         return 1
     fi
 
-    return 0
+    case "$json_data" in
+        *'"success"'*|*'"message"'*)
+            return 0
+            ;;
+        *)
+            local preview
+            preview=$(printf '%s' "$json_data" | head -c 200)
+            ui_print "请求失败：响应非JSON (${BASE_URL}${endpoint})"
+            ui_print "响应预览：${preview}"
+            case "$preview" in
+                *"Just a moment"*|*"cf-mitigated"*|*"Attention Required"*|*"ie6 oldie"*|*"cf-error"*)
+                    ui_print "说明：站点返回了 Cloudflare 挑战页。已默认走 IPv4；香港/机房 IP 仍可能被拦，可给该站配国内代理（HTTP_PROXY 或 host_proxies）。"
+                    ;;
+                *"当前网络请求已被拒绝"*|*"所在地区暂不支持"*)
+                    ui_print "说明：站点拒绝当前出口 IP，可给该站配可访问地区的代理。"
+                    ;;
+            esac
+            return 1
+            ;;
+    esac
 }
 
 get_value() {
@@ -615,6 +756,11 @@ print_all_user_info() {
     while IFS='|' read -r account_mode account_user_id account_secret account_url; do
         [ -z "$account_mode" ] && continue
         set_account_context "$account_mode" "$account_user_id" "$account_secret" "$account_url"
+        if should_skip_host "$BASE_URL"; then
+            ui_print "→ 已忽略 ${BASE_URL}，跳过用户信息"
+            ui_print ""
+            continue
+        fi
         do_user_info
         ui_print ""
     done <<EOF
@@ -685,11 +831,19 @@ run_account() {
     ui_print "认证：$([ "$AUTH_MODE" = "cookie" ] && echo "Cookie" || echo "Token")"
     ui_print ""
 
-    do_checkin
-    checkin_status=$?
+    if should_skip_host "$BASE_URL"; then
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+        ui_print "已忽略该站点（skip_hosts），不计入失败"
+        checkin_status=0
+    else
+        do_checkin
+        checkin_status=$?
+    fi
     ui_print ""
 
-    if [ "$checkin_status" -eq 0 ]; then
+    if should_skip_host "$BASE_URL"; then
+        ui_print "用户 ${USER_ID} 任务忽略"
+    elif [ "$checkin_status" -eq 0 ]; then
         SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
         ui_print "用户 ${USER_ID} 任务成功"
     else
@@ -719,9 +873,10 @@ done <<EOF
 $ACCOUNTS
 EOF
 
-SUCCESS_RATE=$(awk "BEGIN { if ($ACCOUNT_COUNT <= 0) printf \"0.00\"; else printf \"%.2f\", $SUCCESS_COUNT * 100 / $ACCOUNT_COUNT }")
+ATTEMPTED_COUNT=$((ACCOUNT_COUNT - SKIP_COUNT))
+SUCCESS_RATE=$(awk -v attempted="$ATTEMPTED_COUNT" -v success="$SUCCESS_COUNT" 'BEGIN { if (attempted <= 0) printf "0.00"; else printf "%.2f", success * 100 / attempted }')
 
 print_all_user_info
 ui_print ""
-ui_print "共${ACCOUNT_COUNT}个用户成功${SUCCESS_COUNT}个失败${FAIL_COUNT}个 ${SUCCESS_RATE}%"
+ui_print "共${ACCOUNT_COUNT}个用户成功${SUCCESS_COUNT}个失败${FAIL_COUNT}个忽略${SKIP_COUNT}个 ${SUCCESS_RATE}%"
 ui_print "===== 任务结束 ====="

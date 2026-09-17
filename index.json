@@ -118,6 +118,34 @@
     "task_link": ""
   },
   {
+    "id": "newapi",
+    "name": "NewAPI 签到",
+    "type": "raw",
+    "link": "https://github.com/liyw0205/fls-scripts/raw/refs/heads/main/scripts/newapi/DailyTask.sh",
+    "link_name": "newapi/DailyTask.sh",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/newapi/README.md",
+    "install": "",
+    "task_cron": [
+      {
+        "name": "NewAPI 签到",
+        "cron": "0 8 * * *",
+        "command": "task newapi/DailyTask.sh",
+        "var": {
+          "tokens": "",
+          "cookie": "",
+          "curl_ip": "4",
+          "HTTP_PROXY": "",
+          "host_proxies": "",
+          "skip_hosts": ""
+        },
+        "remark": "tokens=user_id#token[#url]，多账号逗号分隔。curl_ip 默认 4，避免 futureppo 走 IPv6 撞 Cloudflare。香港/机房 IP 仍被拦时可填 HTTP_PROXY 或 host_proxies=futureppo.top=http://代理，不要把代理账号写入仓库。skip_hosts 可选，匹配主机不请求、不算失败。"
+      }
+    ],
+    "created_at": "2026-06-13 00:00:00",
+    "updated_at": "2026-08-25 01:27:00",
+    "task_link": ""
+  },
+  {
     "id": "wisart_checkin",
     "name": "智画创每日签到",
     "type": "raw",
