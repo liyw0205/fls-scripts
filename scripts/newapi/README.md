@@ -16,6 +16,8 @@ Cookie 多账号：
 cookie=123#session=xxxx#https://example.com
 ```
 
+请求头默认使用移动 Chrome 浏览器 UA。可通过 `NEWAPI_USER_AGENT` 覆盖，建议填写从实际浏览器复制的完整 User-Agent；脚本会同步生成对应的 Chromium 客户端提示头。兼容 `user_agent` / `USER_AGENT`，但不要使用 `fls-checkin/1.0` 这类脚本标识。
+
 也可拆开写 `user_id` / `token` / `url`，逗号分隔，数量为 1 或与账号数一致。
 
 ## Cloudflare / 地域限制
@@ -43,4 +45,5 @@ host_proxies=futureppo.top=http://127.0.0.1:7890
 - 签到接口：`POST /api/user/checkin`
 - 用户信息：`GET /api/user/self`
 - curl 跟随重定向（`-L`）
+- Cookie 模式同时发送 `new-api-user: user_id`，仅有 session Cookie 而没有对应用户 ID 时，NewAPI 会返回未提供用户标识。
 - 非 JSON 响应会打印前 200 字符，便于区分 Cloudflare 挑战页和地域拒绝页

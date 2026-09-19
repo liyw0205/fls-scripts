@@ -133,12 +133,13 @@
         "var": {
           "tokens": "",
           "cookie": "",
+          "NEWAPI_USER_AGENT": "",
           "curl_ip": "4",
           "HTTP_PROXY": "",
           "host_proxies": "",
           "skip_hosts": ""
         },
-        "remark": "tokens=user_id#token[#url]，多账号逗号分隔。curl_ip 默认 4，避免 futureppo 走 IPv6 撞 Cloudflare。香港/机房 IP 仍被拦时可填 HTTP_PROXY 或 host_proxies=futureppo.top=http://代理，不要把代理账号写入仓库。skip_hosts 可选，匹配主机不请求、不算失败。"
+        "remark": "tokens=user_id#token[#url]，多账号逗号分隔；Cookie 模式用 cookie=user_id#session[#url]。可选 NEWAPI_USER_AGENT 填浏览器 UA，默认移动 Chrome。curl_ip 默认 4，避免 futureppo 走 IPv6 撞 Cloudflare。香港/机房 IP 仍被拦时可填 HTTP_PROXY 或 host_proxies=futureppo.top=http://代理，不要把代理账号写入仓库。skip_hosts 可选，匹配主机不请求、不算失败。"
       }
     ],
     "created_at": "2026-06-13 00:00:00",

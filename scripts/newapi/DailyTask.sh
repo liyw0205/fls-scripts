@@ -1,12 +1,45 @@
 #!/bin/ash
 
 DEFAULT_URL="https://huashang.dpdns.org"
+DEFAULT_USER_AGENT="Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36"
 
 RAW_USER_ID="${user_id:-${USER_ID:-$1}}"
 RAW_TOKEN="${token:-${TOKEN:-$2}}"
 RAW_TOKENS="${tokens:-${TOKENS:-}}"
 RAW_URL="${url:-${URL:-${3:-}}}"
 RAW_COOKIE="${cookie:-${COOKIE:-${session_cookie:-${SESSION_COOKIE:-}}}}"
+RAW_USER_AGENT="${NEWAPI_USER_AGENT:-${newapi_user_agent:-${user_agent:-${USER_AGENT:-}}}}"
+
+case "$RAW_USER_AGENT" in
+    ""|fls-checkin/1.0) USER_AGENT="$DEFAULT_USER_AGENT" ;;
+    *) USER_AGENT="$RAW_USER_AGENT" ;;
+esac
+
+# Keep Chromium client hints consistent with the configurable browser UA.
+UA_MAJOR=$(printf '%s' "$USER_AGENT" | sed -n 's/.*Chrome\/\([0-9][0-9]*\).*/\1/p')
+[ -z "$UA_MAJOR" ] && UA_MAJOR=146
+case "$USER_AGENT" in
+    *Android*|*Mobile*)
+        SEC_CH_UA_PLATFORM='"Android"'
+        SEC_CH_UA_MOBILE='?1'
+        SEC_CH_UA="\"Chromium\";v=\"$UA_MAJOR\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"$UA_MAJOR\""
+        ;;
+    *Windows*)
+        SEC_CH_UA_PLATFORM='"Windows"'
+        SEC_CH_UA_MOBILE='?0'
+        SEC_CH_UA="\"Chromium\";v=\"$UA_MAJOR\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"$UA_MAJOR\""
+        ;;
+    *Macintosh*|*Mac\ OS*)
+        SEC_CH_UA_PLATFORM='"macOS"'
+        SEC_CH_UA_MOBILE='?0'
+        SEC_CH_UA="\"Chromium\";v=\"$UA_MAJOR\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"$UA_MAJOR\""
+        ;;
+    *)
+        SEC_CH_UA_PLATFORM='"Linux"'
+        SEC_CH_UA_MOBILE='?0'
+        SEC_CH_UA="\"Chromium\";v=\"$UA_MAJOR\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"$UA_MAJOR\""
+        ;;
+esac
 
 ACCOUNTS=""
 ACCOUNT_COUNT=0
@@ -50,6 +83,7 @@ usage() {
     echo "  user_id='123,456' token='aaa,bbb' url='1.com,2.com' $0"
     echo "  tokens='123#aaa#1.com,456#bbb,2.com' $0"
     echo "  cookie='123#aaaaa#1.com,456#qqqqqq,2.com' $0"
+    echo "  NEWAPI_USER_AGENT='浏览器 User-Agent' $0"
     echo ""
 }
 
@@ -603,11 +637,11 @@ curl_wrapper() {
             -X "$method" "${BASE_URL}${endpoint}" \
             -H "new-api-user: $USER_ID" \
             -H "$auth_header" \
-            -H 'User-Agent: Mozilla/5.0 (Linux; Android; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' \
+            -H "User-Agent: $USER_AGENT" \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'sec-ch-ua-platform: "Android"' \
-            -H 'sec-ch-ua: "Chromium";v="146", "Not-A.Brand";v="24", "Android WebView";v="146"' \
-            -H 'sec-ch-ua-mobile: ?1' \
+            -H "sec-ch-ua-platform: $SEC_CH_UA_PLATFORM" \
+            -H "sec-ch-ua: $SEC_CH_UA" \
+            -H "sec-ch-ua-mobile: $SEC_CH_UA_MOBILE" \
             -H "origin: $BASE_URL" \
             -H "referer: ${BASE_URL}/console/personal" \
             -H 'x-requested-with: mark.via' \
@@ -623,11 +657,11 @@ curl_wrapper() {
             -X "$method" "${BASE_URL}${endpoint}" \
             -H "new-api-user: $USER_ID" \
             -H "$auth_header" \
-            -H 'User-Agent: Mozilla/5.0 (Linux; Android; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36' \
+            -H "User-Agent: $USER_AGENT" \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'sec-ch-ua-platform: "Android"' \
-            -H 'sec-ch-ua: "Chromium";v="146", "Not-A.Brand";v="24", "Android WebView";v="146"' \
-            -H 'sec-ch-ua-mobile: ?1' \
+            -H "sec-ch-ua-platform: $SEC_CH_UA_PLATFORM" \
+            -H "sec-ch-ua: $SEC_CH_UA" \
+            -H "sec-ch-ua-mobile: $SEC_CH_UA_MOBILE" \
             -H "origin: $BASE_URL" \
             -H "referer: ${BASE_URL}/console/personal" \
             -H 'x-requested-with: mark.via' \
