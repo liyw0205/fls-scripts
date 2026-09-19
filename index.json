@@ -194,6 +194,31 @@
     "task_link": ""
   },
   {
+    "id": "zaiduyu_checkin",
+    "name": "Clodesen 每日签到",
+    "type": "raw",
+    "link": "https://github.com/liyw0205/fls-scripts/raw/refs/heads/main/scripts/zaiduyu/zaiduyu_checkin.py",
+    "link_name": "zaiduyu/zaiduyu_checkin.py",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/zaiduyu/README.md",
+    "install": "${FLS_PYTHON:-python3} -m pip install requests",
+    "task_cron": [
+      {
+        "name": "Clodesen 每日签到",
+        "cron": "30 8 * * *",
+        "command": "task zaiduyu/zaiduyu_checkin.py",
+        "var": {
+          "ZAIDUYU_IDENTIFIER": "",
+          "ZAIDUYU_PASSWORD": "",
+          "ZAIDUYU_URL": ""
+        },
+        "remark": "设置 ZAIDUYU_IDENTIFIER 和 ZAIDUYU_PASSWORD；脚本使用账号密码登录，不读取固定凭据文件。"
+      }
+    ],
+    "created_at": "2026-09-19 00:00:00",
+    "updated_at": "2026-09-19 00:00:00",
+    "task_link": ""
+  },
+  {
     "id": "ncmm",
     "name": "ncmm 网易云音乐人助手",
     "type": "repo",
