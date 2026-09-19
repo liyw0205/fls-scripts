@@ -19,7 +19,11 @@ DEFAULT_URL = "https://image.mlgb7.com"
 COOKIE_ENV = "LUPI_COOKIE"
 URL_ENV_NAMES = ("LUPI_URL", "LUPI_BASE_URL")
 COOKIE_HOST = "image.mlgb7.com"
-USER_AGENT = "fls-checkin/1.0 (+https://github.com/liyw0205/fls)"
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/131.0.0.0 Safari/537.36"
+)
 
 
 class CheckinError(RuntimeError):

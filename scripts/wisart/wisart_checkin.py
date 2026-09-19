@@ -19,7 +19,11 @@ DEFAULT_URL = "https://wisart.kuaileshifu.com"
 COOKIE_ENV = "WISART_COOKIE"
 URL_ENV_NAMES = ("WISART_URL", "WISART_BASE_URL")
 COOKIE_HOST = "wisart.kuaileshifu.com"
-USER_AGENT = "fls-checkin/1.0 (+https://github.com/liyw0205/fls)"
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/131.0.0.0 Safari/537.36"
+)
 
 
 class CheckinError(RuntimeError):

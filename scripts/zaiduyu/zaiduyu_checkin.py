@@ -24,7 +24,12 @@ IDENTIFIER_ENV_NAMES = (
     "PAI_USERNAME",
 )
 PASSWORD_ENV_NAMES = ("ZAIDUYU_PASSWORD", "PAI_PASSWORD")
-USER_AGENT = "fls-checkin/1.0 (+https://github.com/liyw0205/fls)"
+USER_AGENT = os.environ.get(
+    "ZAIDUYU_USER_AGENT",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/131.0.0.0 Safari/537.36",
+).strip()
 
 
 class CheckinError(RuntimeError):
