@@ -45,6 +45,7 @@ https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/index.json
 | `wisart_checkin` | 智画创每日签到 | `raw` | 使用 Cookie 查询并执行每日积分签到 |
 | `lupi_checkin` | 噜皮生图每日签到 | `raw` | 使用 Cookie 查询并执行每日积分签到 |
 | `zaiduyu_checkin` | Clodesen 每日签到 | `raw` | 使用账号密码登录后执行每日积分签到 |
+| `zaiduyu_redemption` | Clodesen 限时兑换码 | `raw` | 使用账号密码登录并兑换限时兑换码 |
 | `ncmm` | ncmm 网易云音乐人助手 | `repo` | [3899/ncmm](https://github.com/3899/ncmm) Go 二进制：云贝/VIP/音乐人/乐迷团；安装后需运行「安装/更新二进制」任务 |
 
 ---
