@@ -36,12 +36,22 @@ ZAIDUYU_REDEMPTION_CODE=限时兑换码
 # 可选：ZAIDUYU_URL、ZAIDUYU_USER_AGENT
 ```
 
+多账号时使用 `ZAIDUYU_ACCOUNTS`，格式为 `账号1,密码1#账号2,密码2#账号3,密码3`。每个账号会独立登录和兑换，某个账号失败不会阻断其他账号；密码中的 `#` 不能作为分隔符。
+
 也可以直接调用：
 
 ```bash
 python3 zaiduyu_redemption.py \
   --identifier '用户名或邮箱' \
   --password '登录密码' \
+  --code '兑换码'
+```
+
+多账号调用：
+
+```bash
+python3 zaiduyu_redemption.py \
+  --accounts '账号1,密码1#账号2,密码2#账号3,密码3' \
   --code '兑换码'
 ```
 

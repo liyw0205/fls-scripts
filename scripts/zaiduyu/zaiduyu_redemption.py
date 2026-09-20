@@ -23,6 +23,7 @@ IDENTIFIER_ENV_NAMES = (
     "PAI_USERNAME",
 )
 PASSWORD_ENV_NAMES = ("ZAIDUYU_PASSWORD", "PAI_PASSWORD")
+ACCOUNTS_ENV_NAMES = ("ZAIDUYU_ACCOUNTS", "PAI_ACCOUNTS")
 CODE_ENV_NAMES = (
     "ZAIDUYU_REDEMPTION_CODE",
     "ZAIDUYU_CODE",
@@ -96,19 +97,45 @@ def result(status: str, message: str, **fields: object) -> dict:
     return payload
 
 
-def resolve_credentials(args: argparse.Namespace) -> tuple[str, str]:
+def parse_accounts(raw: str) -> list[tuple[str, str]]:
+    entries = [entry.strip() for entry in raw.split("#") if entry.strip()]
+    if not entries:
+        raise RedemptionError(
+            "ZAIDUYU_ACCOUNTS 不能为空，格式应为：账号1,密码1#账号2,密码2"
+        )
+
+    accounts = []
+    for index, entry in enumerate(entries, 1):
+        if "," not in entry:
+            raise RedemptionError(
+                f"ZAIDUYU_ACCOUNTS 第 {index} 项格式不正确，应为账号,密码"
+            )
+        identifier, password = entry.split(",", 1)
+        identifier = identifier.strip()
+        password = password.strip()
+        if not identifier or not password:
+            raise RedemptionError(f"ZAIDUYU_ACCOUNTS 第 {index} 项缺少账号或密码")
+        accounts.append((identifier, password))
+
+    return accounts
+
+
+def resolve_accounts(args: argparse.Namespace) -> list[tuple[str, str]]:
+    raw = str(args.accounts or "").strip() or first_env(*ACCOUNTS_ENV_NAMES)
+    if raw:
+        return parse_accounts(raw)
+
     identifier = str(args.identifier or "").strip() or first_env(*IDENTIFIER_ENV_NAMES)
     password = str(args.password or "").strip() or first_env(*PASSWORD_ENV_NAMES)
-
     if not identifier:
         raise RedemptionError(
-            "未找到账号。请传入 --identifier，或设置 ZAIDUYU_IDENTIFIER"
+            "未找到账号。请传入 --identifier，或设置 ZAIDUYU_IDENTIFIER，或设置 ZAIDUYU_ACCOUNTS"
         )
     if not password:
         raise RedemptionError(
-            "未找到密码。请传入 --password，或设置 ZAIDUYU_PASSWORD"
+            "未找到密码。请传入 --password，或设置 ZAIDUYU_PASSWORD，或设置 ZAIDUYU_ACCOUNTS"
         )
-    return identifier, password
+    return [(identifier, password)]
 
 
 def resolve_code(args: argparse.Namespace) -> str:
@@ -132,13 +159,13 @@ def remaining_value(status: dict) -> object:
         return remaining
 
 
-def run(args: argparse.Namespace) -> dict:
-    base_url = normalize_base_url(
-        args.base_url or first_env(*URL_ENV_NAMES) or DEFAULT_URL
-    )
-    identifier, password = resolve_credentials(args)
-    code = None if args.dry_run else resolve_code(args)
-
+def run_account(
+    base_url: str,
+    identifier: str,
+    password: str,
+    code: str | None,
+    args: argparse.Namespace,
+) -> dict:
     session = requests.Session()
     session.headers.update(
         {
@@ -213,12 +240,56 @@ def run(args: argparse.Namespace) -> dict:
     )
 
 
+def run(args: argparse.Namespace) -> dict:
+    base_url = normalize_base_url(
+        args.base_url or first_env(*URL_ENV_NAMES) or DEFAULT_URL
+    )
+    accounts = resolve_accounts(args)
+    code = None if args.dry_run else resolve_code(args)
+    account_results = []
+
+    for index, (identifier, password) in enumerate(accounts, 1):
+        try:
+            account_payload = run_account(base_url, identifier, password, code, args)
+        except RedemptionError as exc:
+            account_payload = result("error", str(exc))
+
+        account_payload["account_index"] = index
+        account_payload["account"] = identifier
+        account_results.append(account_payload)
+
+    if len(account_results) == 1:
+        return account_results[0]
+
+    success_count = sum(item.get("status") == ("pending" if args.dry_run else "success") for item in account_results)
+    failed_count = len(account_results) - success_count
+    if failed_count == 0:
+        aggregate_status = "pending" if args.dry_run else "success"
+    elif success_count == 0:
+        aggregate_status = "error"
+    else:
+        aggregate_status = "partial"
+
+    action = "查询" if args.dry_run else "兑换"
+    return result(
+        aggregate_status,
+        f"多账号{action}完成：成功 {success_count} 个，失败 {failed_count} 个",
+        accounts=account_results,
+    )
+
+
 def emit(payload: dict, as_json: bool) -> None:
     if as_json:
         print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
         return
 
     print(f"{payload['site']}：{payload['message']}")
+    if isinstance(payload.get("accounts"), list):
+        for item in payload["accounts"]:
+            account = item.get("account") or f"账号{item.get('account_index', '?')}"
+            print(f"[{account}] {item.get('message', '无结果')}")
+        return
+
     details = []
     if payload.get("remaining") is not None:
         details.append(f"剩余额度 {payload['remaining']}")
@@ -238,6 +309,10 @@ def parse_args() -> argparse.Namespace:
         help="登录账号（用户名或邮箱）",
     )
     parser.add_argument("--password", help="登录密码")
+    parser.add_argument(
+        "--accounts",
+        help="多账号，格式为 账号1,密码1#账号2,密码2",
+    )
     parser.add_argument(
         "--code",
         "--redemption-code",
@@ -268,7 +343,7 @@ def main() -> int:
         return 130
 
     emit(payload, args.json)
-    return 0
+    return 1 if payload.get("status") in {"error", "partial"} else 0
 
 
 if __name__ == "__main__":
