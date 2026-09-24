@@ -161,9 +161,11 @@
         "command": "task wisart/wisart_checkin.py",
         "var": {
           "WISART_COOKIE": "",
+          "WISART_USERNAME": "",
+          "WISART_PASSWORD": "",
           "WISART_URL": ""
         },
-        "remark": "设置 WISART_COOKIE 为浏览器复制的完整 Cookie；WISART_URL 可选，用于测试或自定义站点地址。"
+        "remark": "可使用 WISART_USERNAME/WISART_PASSWORD 登录，或使用 WISART_COOKIE 直接签到；WISART_URL 可选，用于测试或自定义站点地址。"
       }
     ],
     "created_at": "2026-09-18 00:00:00",

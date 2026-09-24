@@ -17,6 +17,10 @@ import requests
 SITE_NAME = "智画创"
 DEFAULT_URL = "https://wisart.kuaileshifu.com"
 COOKIE_ENV = "WISART_COOKIE"
+USERNAME_ENV = "WISART_USERNAME"
+PASSWORD_ENV = "WISART_PASSWORD"
+USERNAME_ENV_NAMES = (USERNAME_ENV,)
+PASSWORD_ENV_NAMES = (PASSWORD_ENV,)
 URL_ENV_NAMES = ("WISART_URL", "WISART_BASE_URL")
 COOKIE_HOST = "wisart.kuaileshifu.com"
 USER_AGENT = (
@@ -77,14 +81,18 @@ def cookie_from_file(path: Path, host: str) -> str:
     raise CheckinError(f"凭据文件中没有找到 {host} 的 Cookie")
 
 
-def resolve_cookie(explicit: str | None, cookie_file: str | None) -> str:
-    if explicit and explicit.strip():
-        return normalize_cookie(explicit)
+def resolve_credentials(args: argparse.Namespace) -> tuple[str, str]:
+    username = str(args.username or "").strip() or first_env(*USERNAME_ENV_NAMES)
+    password = str(args.password or "").strip() or first_env(*PASSWORD_ENV_NAMES)
 
-    env_cookie = os.environ.get(COOKIE_ENV, "").strip()
-    if env_cookie:
-        return normalize_cookie(env_cookie)
+    if not username:
+        raise CheckinError(f"未找到用户名。请传入 --username 或设置 {USERNAME_ENV}")
+    if not password:
+        raise CheckinError(f"未找到密码。请传入 --password 或设置 {PASSWORD_ENV}")
+    return username, password
 
+
+def resolve_cookie_file(cookie_file: str | None) -> str:
     env_file = os.environ.get("SIGNIN_COOKIE_FILE", "").strip()
     explicit_file = cookie_file or env_file
     if explicit_file:
@@ -93,8 +101,31 @@ def resolve_cookie(explicit: str | None, cookie_file: str | None) -> str:
             raise CheckinError(f"凭据文件不存在：{path}")
         return cookie_from_file(path.resolve(), COOKIE_HOST)
 
+    raise CheckinError("未找到 Cookie 文件")
+
+
+def resolve_auth(args: argparse.Namespace) -> tuple[str, str, str]:
+    explicit_cookie = str(args.cookie or "").strip()
+    explicit_username = str(args.username or "").strip()
+    explicit_password = str(args.password or "").strip()
+    if explicit_cookie:
+        return "cookie", normalize_cookie(explicit_cookie), ""
+    if explicit_username or explicit_password:
+        username, password = resolve_credentials(args)
+        return "password", username, password
+
+    env_cookie = os.environ.get(COOKIE_ENV, "").strip()
+    if env_cookie:
+        return "cookie", normalize_cookie(env_cookie), ""
+
+    if first_env(*USERNAME_ENV_NAMES) or first_env(*PASSWORD_ENV_NAMES):
+        username, password = resolve_credentials(args)
+        return "password", username, password
+
+    if args.cookie_file or os.environ.get("SIGNIN_COOKIE_FILE", "").strip():
+        return "cookie", resolve_cookie_file(args.cookie_file), ""
     raise CheckinError(
-        f"未找到 Cookie。请传入 --cookie，或设置 {COOKIE_ENV} / --cookie-file"
+        f"未找到认证信息。请设置 {USERNAME_ENV}/{PASSWORD_ENV}，或使用 --cookie / --cookie-file"
     )
 
 
@@ -120,9 +151,10 @@ def request_json(
     method: str,
     url: str,
     timeout: float,
+    **kwargs: object,
 ) -> dict:
     try:
-        response = session.request(method, url, timeout=timeout)
+        response = session.request(method, url, timeout=timeout, **kwargs)
     except requests.RequestException as exc:
         raise CheckinError(f"网络请求失败：{exc}") from exc
     return response_json(response)
@@ -136,7 +168,7 @@ def result(status: str, message: str, **fields: object) -> dict:
 
 def run(args: argparse.Namespace) -> dict:
     base_url = normalize_base_url(args.base_url or first_env(*URL_ENV_NAMES) or DEFAULT_URL)
-    cookie = resolve_cookie(args.cookie, args.cookie_file)
+    auth_type, auth_value, auth_secret = resolve_auth(args)
 
     session = requests.Session()
     session.headers.update(
@@ -145,9 +177,19 @@ def run(args: argparse.Namespace) -> dict:
             "User-Agent": USER_AGENT,
             "Origin": base_url,
             "Referer": base_url + "/",
-            "Cookie": cookie,
         }
     )
+
+    if auth_type == "cookie":
+        session.headers["Cookie"] = auth_value
+    else:
+        request_json(
+            session,
+            "POST",
+            base_url + "/api/auth/login",
+            args.timeout,
+            json={"username": auth_value, "password": auth_secret},
+        )
 
     state = request_json(
         session,
@@ -205,6 +247,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="智画创每日签到（适用于 FLS）")
     parser.add_argument("--cookie", help=f"Cookie；未提供时读取 {COOKIE_ENV}")
     parser.add_argument("--cookie-file", help="包含站点 Cookie 的凭据文件")
+    parser.add_argument("--username", help=f"登录用户名；未提供时读取 {USERNAME_ENV}")
+    parser.add_argument("--password", help=f"登录密码；未提供时读取 {PASSWORD_ENV}")
     parser.add_argument("--url", "--base-url", dest="base_url", help="站点地址")
     parser.add_argument("--timeout", type=float, default=30.0, help="请求超时秒数，默认 30")
     parser.add_argument("--dry-run", action="store_true", help="只查询状态，不执行签到")
