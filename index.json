@@ -1,5 +1,30 @@
 [
   {
+    "id": "ly77625_checkin",
+    "name": "77625 路由站每日签到",
+    "type": "raw",
+    "link": "https://github.com/liyw0205/fls-scripts/raw/refs/heads/main/scripts/77625/77625_checkin.py",
+    "link_name": "77625/77625_checkin.py",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/77625/README.md",
+    "install": "${FLS_PYTHON:-python3} -m pip install requests",
+    "task_cron": [
+      {
+        "name": "77625 路由站每日签到",
+        "cron": "40 8 * * *",
+        "command": "task 77625/77625_checkin.py",
+        "var": {
+          "LY77625_USERNAME": "",
+          "LY77625_PASSWORD": "",
+          "LY77625_URL": ""
+        },
+        "remark": "填写 LY77625_USERNAME 和 LY77625_PASSWORD；LY77625_URL 可选，默认 https://ly.77625.xyz。不读取本地凭据文件。"
+      }
+    ],
+    "created_at": "2026-11-08 00:00:00",
+    "updated_at": "2026-11-08 00:00:00",
+    "task_link": ""
+  },
+  {
     "id": "chami_checkin",
     "name": "茶蘼绘图公益站每日签到",
     "type": "raw",
@@ -265,7 +290,7 @@
           "ZAIDUYU_USER_AGENT": "",
           "ZAIDUYU_URL": ""
         },
-        "remark": "设置 ZAIDUYU_ACCOUNTS（格式：账号1,密码1#账号2,密码2）和 ZAIDUYU_REDEMPTION_CODE；兑换码任务默认不设置定时，手动运行一次即可。"
+        "remark": "设置 ZAIDUYU_ACCOUNTS（格式：账号1,密码1#账号2,密码2）和 ZAIDUYU_REDEMPTION_CODE；兑换码任务默认不设置定时，兑换失败会在 30 秒后对失败账号重试一次。"
       }
     ],
     "created_at": "2026-09-20 00:00:00",
