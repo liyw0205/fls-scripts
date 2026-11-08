@@ -1,5 +1,29 @@
 [
   {
+    "id": "chami_checkin",
+    "name": "茶蘼绘图公益站每日签到",
+    "type": "raw",
+    "link": "https://github.com/liyw0205/fls-scripts/raw/refs/heads/main/scripts/chami/chami_checkin.py",
+    "link_name": "chami/chami_checkin.py",
+    "doc_link": "https://cdn.jsdelivr.net/gh/liyw0205/fls-scripts@main/scripts/chami/README.md",
+    "install": "${FLS_PYTHON:-python3} -m pip install requests",
+    "task_cron": [
+      {
+        "name": "茶蘼绘图公益站每日签到",
+        "cron": "35 8 * * *",
+        "command": "task chami/chami_checkin.py",
+        "var": {
+          "CHAMI_CREDENTIALS_FILE": "/data/user/0/com.termux/files/home/app.txt",
+          "CHAMI_URL": ""
+        },
+        "remark": "默认读取 /data/user/0/com.termux/files/home/app.txt 的 URL、账号、密码；也可用 CHAMI_URL 覆盖站点地址。"
+      }
+    ],
+    "created_at": "2026-11-08 00:00:00",
+    "updated_at": "2026-11-08 00:00:00",
+    "task_link": ""
+  },
+  {
     "id": "caiyun",
     "name": "中国移动云盘",
     "type": "repo",
